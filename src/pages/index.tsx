@@ -20,12 +20,11 @@ export default function BreakingNewsPage({newsArticles} : BreakingNewsPageProps)
   return (
     <>
       <Head>
-        <title>BreakingNewsPage</title>
+        <title key="title">BreakingNewsPage</title>
       </Head>
       <main>
         <h1>BreakingNewsPage</h1>
         <NewsArticlesGrid articles={newsArticles}></NewsArticlesGrid>
-        {/* <NewsArticleEntry article={newsArticles[0]}></NewsArticleEntry> */}
       </main>
     </>
   )

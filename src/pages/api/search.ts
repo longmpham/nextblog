@@ -19,9 +19,6 @@ export default async function handler(
     const newsResponse: NewsResponse = await response.json()
     res.status(200).json(newsResponse.articles)
   } catch (error) {
-    alert(error)
+    res.status(404).json({ msg: "there seems to be something wrong..."})
   }
-
-
-  res.status(200).json({ name: 'John Doe' })
 }

@@ -1,7 +1,8 @@
 import NewsArticlesGrid from '@/components/NewsArticlesGrid'
 import { NewsArticle } from '@/models/NewsArticles'
+import Head from 'next/head'
 import { FormEvent, useState } from 'react'
-import { Button, Form, Spinner } from 'react-bootstrap'
+import { Alert, Button, Form, Spinner } from 'react-bootstrap'
 
 
 const SearchPage = () => {
@@ -38,21 +39,30 @@ const SearchPage = () => {
 
   return(
     <>
-      <h1>Search Page</h1>
-      <Form onSubmit={ handleSearch }>
-        <Form.Group className="mb-3" controlId="search-input">
-          <Form.Label>Search your news here</Form.Label>
-          <Form.Control type="text" name="searchQuery" placeholder="artificial intelligence"></Form.Control>
-          <Form.Text>Finally your news sources in one place with no ads...</Form.Text>
-        </Form.Group>
-        <Button variant="primary" disabled={searchResultsLoading} type="submit">Search</Button>
-      </Form>
-      <div className="d-flex flex-column align-items-center">
-        { searchResultsLoading && <Spinner animation="border"></Spinner> }
-        { searchResultsError && <p>Something Went Wrong...</p> }
-        { searchResults?.length === 0 && <p>Nothing Found!</p>}
-        { searchResults && <NewsArticlesGrid articles={searchResults}></NewsArticlesGrid> }
-      </div>
+      <Head>
+        <title key="title">Search News</title>
+      </Head>
+      <main>
+        <Alert>
+          Client side data fetching to show fresh data every search. 
+          Requests are handled by our backend via API routes
+        </Alert>
+        <h1>Search Page</h1>
+        <Form onSubmit={ handleSearch }>
+          <Form.Group className="mb-3" controlId="search-input">
+            <Form.Label>Search your news here</Form.Label>
+            <Form.Control type="text" name="searchQuery" placeholder="artificial intelligence"></Form.Control>
+            <Form.Text>Finally your news sources in one place with no ads...</Form.Text>
+          </Form.Group>
+          <Button variant="primary" disabled={searchResultsLoading} type="submit">Search</Button>
+        </Form>
+        <div className="d-flex flex-column align-items-center">
+          { searchResultsLoading && <Spinner animation="border"></Spinner> }
+          { searchResultsError && <p>Something Went Wrong...</p> }
+          { searchResults?.length === 0 && <p>Nothing Found!</p>}
+          { searchResults && <NewsArticlesGrid articles={searchResults}></NewsArticlesGrid> }
+        </div>
+      </main>
     </>
   )
 }
