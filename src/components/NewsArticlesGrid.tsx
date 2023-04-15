@@ -8,7 +8,6 @@ interface NewsArticlesGridProps {
 
 const NewsArticlesGrid = ({ articles } : NewsArticlesGridProps) => {
 
-
   return(
     <>
       <Row xs={1} sm={2} xl={3} className="g-4">
@@ -18,13 +17,10 @@ const NewsArticlesGrid = ({ articles } : NewsArticlesGridProps) => {
               <NewsArticleEntry article={article}></NewsArticleEntry>
             </Col>
           ))
-
         }
       </Row>
     </>
-
   )
-
 }
 
 export default NewsArticlesGrid

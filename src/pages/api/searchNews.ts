@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { NewsResponse } from '@/models/NewsArticles'
+import { NewsResponses } from '@/models/NewsArticles'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 
@@ -16,7 +16,7 @@ export default async function handler(
 
   try {
     const response = await fetch(`https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${process.env.NEWS_API_KEY}`)
-    const newsResponse: NewsResponse = await response.json()
+    const newsResponse: NewsResponses = await response.json()
     res.status(200).json(newsResponse.articles)
   } catch (error) {
     res.status(404).json({ msg: "there seems to be something wrong..."})

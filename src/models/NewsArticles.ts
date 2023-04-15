@@ -8,6 +8,6 @@ export interface NewsArticle {
   content: string,
 }
 
-export interface NewsResponse {
+export interface NewsResponses {
   articles: NewsArticle[],
 }

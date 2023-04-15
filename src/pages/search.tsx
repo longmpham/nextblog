@@ -36,7 +36,6 @@ const SearchPage = () => {
     }
   }
 
-
   return(
     <>
       <Head>

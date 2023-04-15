@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 import Head from 'next/head'
-import { NewsArticle, NewsResponse } from '@/models/NewsArticles'
+import { NewsArticle, NewsResponses } from '@/models/NewsArticles'
 import NewsArticleEntry from '@/components/NewsArticleEntry'
 import NewsArticlesGrid from '@/components/NewsArticlesGrid'
 
@@ -9,7 +9,7 @@ interface BreakingNewsPageProps {
 }
 export const getServerSideProps: GetServerSideProps<BreakingNewsPageProps> = async () => {
   const response = await fetch("https://newsapi.org/v2/top-headlines?country=ca&apiKey=" + process.env.NEWS_API_KEY)
-  const newsResponse: NewsResponse = await response.json()
+  const newsResponse: NewsResponses = await response.json()
   return {
     props: {newsArticles: newsResponse.articles }
   }
