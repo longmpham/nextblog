@@ -26,3 +26,11 @@ export interface RedditPostList {
     before?: string;
   };
 }
+
+export interface RedditCategory {
+  category: string
+}
+
+export interface RedditCategories {
+  category: RedditCategory[]
+}

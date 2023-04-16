@@ -1,14 +1,14 @@
 import RedditPostsGrid from "@/components/RedditPostsGrid"
-import { NewsArticle } from "@/models/NewsArticles"
+import { RedditCategories, RedditCategory } from "@/models/RedditPosts"
 import { RedditPost, RedditPostList } from "@/models/RedditPosts"
-import Head from "next/head"
-import { useState, FormEvent } from "react"
-import { Button, Form, Spinner } from "react-bootstrap"
 
+import Head from "next/head"
+import { useState, FormEvent, useEffect } from "react"
+import { Button, Form, Spinner } from "react-bootstrap"
 
 const RedditPage = () => {
 
-
+  const [redditCategories, setRedditCategories] = useState([{}])
   const [searchResults, setSearchResults] = useState<RedditPost[] | null>(null)
   const [searchResultsLoading, setSearchResultsLoading] = useState<boolean>(false)
   const [searchResultsError, setSearchResultsError] = useState<boolean>(false)
@@ -44,6 +44,21 @@ const RedditPage = () => {
 
   }
 
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch("https://www.reddit.com/subreddits/popular.json")
+        const categoriesResponse = await response.json()
+        console.log(categoriesResponse.data.children)
+        // setRedditCategories(categoriesResponse.data.children)
+        setRedditCategories(prevRedditCategories => [...categoriesResponse.data.children])
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   return (
     <>
       <Head>
@@ -54,7 +69,16 @@ const RedditPage = () => {
         <Form.Group className="mb-3" controlId="search-input">
           <Form.Label>Search Reddit Here</Form.Label>
           <Form.Control type="text" name="searchQuery" placeholder="AITA"></Form.Control>
-          <Form.Text>Search for your favourite top posts of reddit here</Form.Text>
+          <Form.Text>Here are some of the top subreddits...</Form.Text>
+          <br></br>
+          {
+            redditCategories.map((category: any, index: number) => (
+              <>
+                <Form.Text key={category.data.title} style={{ fontWeight: index % 2 === 0 ? 'bold' : 'normal' }}>{category.data.display_name} </Form.Text>
+                <Form.Text> | </Form.Text>
+              </>
+            ))
+          }
         </Form.Group>
         <Button variant="primary" disabled={searchResultsLoading} type="submit">Search</Button>
       </Form>
