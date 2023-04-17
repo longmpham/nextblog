@@ -5,6 +5,7 @@ import { RedditPost, RedditPostList } from "@/models/RedditPosts"
 import Head from "next/head"
 import { useState, FormEvent, useEffect } from "react"
 import { Button, Form, Spinner } from "react-bootstrap"
+import axios, { AxiosResponse } from "axios"
 
 const RedditPage = () => {
 
@@ -47,13 +48,14 @@ const RedditPage = () => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch("https://www.reddit.com/subreddits/popular.json")
-        const categoriesResponse = await response.json()
-        console.log(categoriesResponse.data.children)
+        const response: AxiosResponse<RedditCategory[]>= await axios.get("https://www.reddit.com/subreddits/popular.json")
+        // const categoriesResponse = await response.json()
+        // console.log(categoriesResponse.data.children)
         // setRedditCategories(categoriesResponse.data.children)
-        setRedditCategories(prevRedditCategories => [...categoriesResponse.data.children])
+        console.log(response.data.data.children)
+        setRedditCategories(prevRedditCategories => [...response.data.data.children])
       } catch (error) {
-        console.error(error)
+        console.log(error)
       }
     }
     fetchCategories()
@@ -64,30 +66,32 @@ const RedditPage = () => {
       <Head>
         <title key="title">Reddit Posts</title>
       </Head>
-      <h1>Reddit Page</h1>
-      <Form onSubmit={ handleSearch }>
-        <Form.Group className="mb-3" controlId="search-input">
-          <Form.Label>Search Reddit Here</Form.Label>
-          <Form.Control type="text" name="searchQuery" placeholder="AITA"></Form.Control>
-          <Form.Text>Here are some of the top subreddits...</Form.Text>
-          <br></br>
-          {
-            redditCategories.map((category: any, index: number) => (
-              <>
-                <Form.Text key={category.data.title} style={{ fontWeight: index % 2 === 0 ? 'bold' : 'normal' }}>{category.data.display_name} </Form.Text>
-                <Form.Text> | </Form.Text>
-              </>
-            ))
-          }
-        </Form.Group>
-        <Button variant="primary" disabled={searchResultsLoading} type="submit">Search</Button>
-      </Form>
-      <div className="d-flex flex-column align-items-center">
+      <main>
+        <h1>Reddit Page</h1>
+        <Form onSubmit={ handleSearch }>
+          <Form.Group className="mb-3" controlId="search-input">
+            <Form.Label>Search Reddit Here</Form.Label>
+            <Form.Control type="text" name="searchQuery" placeholder="anitiwork"></Form.Control>
+            <Form.Text>Here are some of the top subreddits...</Form.Text>
+            <br></br>
+            {
+              redditCategories.map((category: any, index: number) => (
+                <>
+                  <Form.Text key={category.data.display_name} style={{ fontWeight: index % 2 === 0 ? 'bold' : 'normal' }}>{category.data.display_name} </Form.Text>
+                  <Form.Text> | </Form.Text>
+                </>
+              ))
+            }
+          </Form.Group>
+          <Button variant="primary" disabled={searchResultsLoading} type="submit">Search</Button>
+        </Form>
+        <div className="d-flex flex-column align-items-center">
           { searchResultsLoading && <Spinner animation="border"></Spinner> }
           { searchResultsError && <p>Something Went Wrong...</p> }
           { searchResults?.length === 0 && <p>Nothing Found!</p>}
           { searchResults && <RedditPostsGrid posts={searchResults}></RedditPostsGrid> }
         </div>
+      </main>
     </>
   )
 }

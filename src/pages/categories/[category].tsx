@@ -17,7 +17,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     "science",
   ]
 
-  const paths = categorySlugs.map(slugs => ({ params: { category: slugs } }))
+  const paths = categorySlugs.map(slug => ({ params: { category: slug } }))
 
   return {
     paths,
@@ -30,8 +30,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // params is deconstructing context which is what next uses in place of the file so it knows where to look for.
 export const getStaticProps: GetStaticProps<CategoryNewsPageProps> = async ({ params }) => {  
   const category = params?.category?.toString()
-  const response = await fetch(`https://newsapi.org/v2/top-headlines?country=ca&category=${category}apiKey=${process.env.NEWS_API_KEY}`)
-  const newsResponse: NewsResponse = await response.json()
+  const url = `https://newsapi.org/v2/top-headlines?country=ca&category=${category}&apiKey=${process.env.NEWS_API_KEY}`
+  console.log(url)
+  const response = await fetch(url)
+  const newsResponse: NewsResponses = await response.json()
+  console.log(newsResponse)
   return {
     props: {
       newsArticles: newsResponse.articles,

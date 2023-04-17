@@ -32,5 +32,5 @@ export interface RedditCategory {
 }
 
 export interface RedditCategories {
-  category: RedditCategory[]
+  categories: RedditCategory[]
 }
