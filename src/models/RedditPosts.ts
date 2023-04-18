@@ -28,7 +28,11 @@ export interface RedditPostList {
 }
 
 export interface RedditCategory {
-  category: string
+  data: {
+    display_name: string;
+    url: string;
+    subscribers: number;
+  };
 }
 
 export interface RedditCategories {

@@ -1,5 +1,7 @@
 import NewsArticlesGrid from "@/components/NewsArticlesGrid"
 import { NewsArticle, NewsResponses } from "@/models/NewsArticles"
+import { RedditCategory } from "@/models/RedditPosts"
+import axios, { AxiosResponse } from "axios"
 import { GetStaticPaths, GetStaticProps } from "next"
 
 
@@ -30,18 +32,38 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // params is deconstructing context which is what next uses in place of the file so it knows where to look for.
 export const getStaticProps: GetStaticProps<CategoryNewsPageProps> = async ({ params }) => {  
   const category = params?.category?.toString()
-  const url = `https://newsapi.org/v2/top-headlines?country=ca&category=${category}&apiKey=${process.env.NEWS_API_KEY}`
-  console.log(url)
-  const response = await fetch(url)
+  const response = await fetch(`https://newsapi.org/v2/top-headlines?country=ca&category=${category}&apiKey=${process.env.NEWS_API_KEY}`)
   const newsResponse: NewsResponses = await response.json()
-  console.log(newsResponse)
   return {
     props: {
       newsArticles: newsResponse.articles,
-      revalidate: 5*60,
-    }
+    },
+    revalidate: 5*60,
   }
 }
+
+// export const getStaticProps: GetStaticProps<CategoryNewsPageProps> = async ({ params }) => {  
+//   try {
+//     const response: AxiosResponse<RedditCategory[]> = await axios.get("https://www.reddit.com/subreddits/popular.json");
+  
+//     const categories = await response.data.children.map(category => category.data.display_name); 
+//     console.log(categories);
+  
+//     return {
+//       props: {
+//         newsArticles: categories
+//       },
+//       revalidate: 5 * 60
+//     };
+//   } catch (error) {
+//     console.error(error);
+//     return {
+//       props: {
+//         newsArticles: []
+//       }
+//     };
+//   }
+// }
 
 const category = ({ newsArticles } : CategoryNewsPageProps) => {
 

@@ -6,31 +6,61 @@ import Head from "next/head"
 import { useState, FormEvent, useEffect } from "react"
 import { Button, Form, Spinner } from "react-bootstrap"
 import axios, { AxiosResponse } from "axios"
+import { GetStaticProps } from "next"
 
-const RedditPage = () => {
 
-  const [redditCategories, setRedditCategories] = useState([{}])
+interface RedditCategoriesProps {
+  categories: RedditCategory[],
+}
+
+export const getStaticProps: GetStaticProps<RedditCategoriesProps> = async () => {
+  try {
+    const response = await axios.get('https://www.reddit.com/subreddits/popular.json');
+    // const categories = response.data.data.children.map((category: { data: { display_name: any } }) => category.data.display_name);
+    const categories = response.data.data.children.map((category: { data: { display_name: string, url: string, subscribers: number } }) => {
+      return {
+        key: category.data.display_name,
+        display_name: category.data.display_name,
+        url: `https://www.reddit.com${category.data.url}`,
+        subscribers: category.data.subscribers,
+      }
+    });
+    // console.log(categories)
+    return {
+      props: {
+        categories
+      },
+      revalidate: 60 // revalidate every 60 seconds
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        categories: []
+      }
+    };
+  }
+};
+
+
+const RedditPage = ({categories}: RedditCategoriesProps) => {
+
+  const [redditCategory, setRedditCategory] = useState("")
   const [searchResults, setSearchResults] = useState<RedditPost[] | null>(null)
   const [searchResultsLoading, setSearchResultsLoading] = useState<boolean>(false)
   const [searchResultsError, setSearchResultsError] = useState<boolean>(false)
 
-
-  async function handleSearch(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
-    const formData = new FormData(e.target as HTMLFormElement)
-    const searchQuery = formData.get("searchQuery")?.toString().trim()
-
-    if(searchQuery) {
+  async function search(query: string | undefined){
+    if(query) {
       try {
         setSearchResults(prevSearchResults => null)
         setSearchResultsError(prevSearchResultsError => false)
         setSearchResultsLoading(prevSearchResultsLoading => true)
 
-        const response = await fetch("/api/searchReddit?q="+searchQuery)
+        const response = await fetch("/api/searchReddit?q="+query)
         const redditPosts: RedditPost[] = await response.json()
         
-        console.log(redditPosts)
+        // console.log(redditPosts)
 
         setSearchResults(prevSerachResults => [...redditPosts]) 
 
@@ -42,24 +72,38 @@ const RedditPage = () => {
         setSearchResultsLoading(prevSearchResultsLoading => false)
       }
     }
+  }
+
+  async function handleSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const searchQuery = formData.get("searchQuery")?.toString().trim()
+
+    search(searchQuery)
 
   }
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response: AxiosResponse<RedditCategory[]>= await axios.get("https://www.reddit.com/subreddits/popular.json")
-        // const categoriesResponse = await response.json()
-        // console.log(categoriesResponse.data.children)
-        // setRedditCategories(categoriesResponse.data.children)
-        console.log(response.data.data.children)
-        setRedditCategories(prevRedditCategories => [...response.data.data.children])
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchCategories()
-  }, [])
+  async function handleSubredditSearch(name: string) {
+    setRedditCategory(prev => name)
+    search(name)
+  }
+
+  // useEffect(() => {
+  //   async function fetchCategories() {
+  //     try {
+
+  //       const response = await axios.get("https://www.reddit.com/subreddits/popular.json")
+  //       // const categoriesResponse = await response.json()
+  //       // console.log(response.data.children)
+  //       setRedditCategories(response.data.children)
+  //       setRedditCategories(prevRedditCategories => [...response.data.children])
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
 
   return (
     <>
@@ -75,9 +119,16 @@ const RedditPage = () => {
             <Form.Text>Here are some of the top subreddits...</Form.Text>
             <br></br>
             {
-              redditCategories.map((category: any, index: number) => (
+              categories.map((category: any, index: number) => (
                 <>
-                  <Form.Text key={category.data.display_name} style={{ fontWeight: index % 2 === 0 ? 'bold' : 'normal' }}>{category.data.display_name} </Form.Text>
+                  <Button 
+                    variant="outline-secondary"
+                    size="sm"
+                    key={category.display_name} 
+                    style={{ margin:"2px", fontWeight: index % 2 === 0 ? 'bold' : 'normal' }} 
+                    onClick={() => handleSubredditSearch(category.display_name)}>
+                      {category.display_name} 
+                  </Button>
                   <Form.Text> | </Form.Text>
                 </>
               ))
