@@ -17,6 +17,9 @@ export default async function handler(
   try {
     const response = await fetch(`https://www.reddit.com/r/${searchQuery}/top/.json?t=day`)
     const redditResponse: RedditPostList = await response.json()
+    // const paragraph = redditResponse.data.children.map(child => child.data.selftext.toString())
+    // const sentences = paragraph[0].split('.').map((sentence: string) => sentence.trim());
+    // console.log(sentences);
 
     // console.log(redditResponse.data.children)
     res.status(200).json(redditResponse.data.children)

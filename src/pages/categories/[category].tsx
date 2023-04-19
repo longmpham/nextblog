@@ -3,6 +3,8 @@ import { NewsArticle, NewsResponses } from "@/models/NewsArticles"
 import { RedditCategory } from "@/models/RedditPosts"
 import axios, { AxiosResponse } from "axios"
 import { GetStaticPaths, GetStaticProps } from "next"
+import Head from "next/head"
+import { useRouter } from "next/router"
 
 
 interface CategoryNewsPageProps {
@@ -32,7 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // params is deconstructing context which is what next uses in place of the file so it knows where to look for.
 export const getStaticProps: GetStaticProps<CategoryNewsPageProps> = async ({ params }) => {  
   const category = params?.category?.toString()
-  const response = await fetch(`https://newsapi.org/v2/top-headlines?country=ca&category=${category}&apiKey=${process.env.NEWS_API_KEY}`)
+  const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${process.env.NEWS_API_KEY}`)
   const newsResponse: NewsResponses = await response.json()
   return {
     props: {
@@ -65,16 +67,30 @@ export const getStaticProps: GetStaticProps<CategoryNewsPageProps> = async ({ pa
 //   }
 // }
 
-const category = ({ newsArticles } : CategoryNewsPageProps) => {
+const Category = ({ newsArticles } : CategoryNewsPageProps) => {
 
+  const router = useRouter()
+  const categoryName = router.query.category?.toString()
+
+  var title = ""
+  if(categoryName){
+    title = "Category: " + categoryName[0].toUpperCase() + categoryName.slice(1)
+  }
+
+  
+
+  // const newsArticles = [
   return (
     <>
+      <Head>
+        <title key="title"></title>
+      </Head>
       <main>
-        <h1>Category Page</h1>
+        <h1>Top News For {title}</h1>
         <NewsArticlesGrid articles={newsArticles}></NewsArticlesGrid>
       </main>
     </>
   )
 }
 
-export default category
+export default Category
